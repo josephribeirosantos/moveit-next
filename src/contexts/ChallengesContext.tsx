@@ -54,12 +54,16 @@ export function ChallengesProvider({ children, ...rest }: ChallengesProviderProp
 
 
     useEffect(() => {
+
+        // Let´s check if the  browser supports notifications
+        if (!("Notification" in window)) {
+            return null
+        }
         Notification.requestPermission();
     }, [])
 
 
     useEffect(() => {
-
         Cookies.set('level', String(level));
         Cookies.set('currentExperience', String(currentExperience))
         Cookies.set('challengesCompleted', String(challengesCompleted))
@@ -81,11 +85,10 @@ export function ChallengesProvider({ children, ...rest }: ChallengesProviderProp
         const randomChallengesIndex = Math.floor(Math.random() * challenges.length)
         const challenge = challenges[randomChallengesIndex]
 
-        setActiveChallenge(challenge)
-
+        setActiveChallenge(challenge);
         new Audio('/notification.mp3').play();
 
-        if (!isMobile && Notification.permission === 'granted') {
+        if (Notification.permission === 'granted' && screen.width > 720) {
             new Notification('Novo desafio 🎉 ', {
                 body: `Valendo ${challenge.amount}xp!`
             })
